@@ -2,7 +2,17 @@ import { supabase } from '@/lib/supabase'
 import { Tree } from '@/lib/types'
 import MapWrapper from '../components/MapWrapper'
 import TreeTable from '../components/TreeTable'
-import { TreeDeciduous, MapPin, Database } from 'lucide-react'
+import InfoBibitPopup from '../components/InfoBibitPopup'
+import {
+  TreeDeciduous,
+  MapPin,
+  Database,
+  Leaf,
+  Sprout,
+  ShieldCheck,
+  Heart,
+  ChevronDown,
+} from 'lucide-react'
 
 // Server Side Fetch data dari Supabase
 async function getTrees(): Promise<Tree[]> {
@@ -15,6 +25,7 @@ async function getTrees(): Promise<Tree[]> {
     console.error('Error fetching trees:', error)
     return []
   }
+
   return data || []
 }
 
@@ -22,92 +33,378 @@ export const revalidate = 0
 
 export default async function HomePage() {
   const trees = await getTrees()
+  const currentYear = new Date().getFullYear()
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between text-slate-800">
-      <main className="pb-12">
-        {/* Header Banner + Logo KKN */}
-        <header className="bg-emerald-800 text-white py-10 px-4 sm:px-8 shadow-lg">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-            
-            {/* Teks Judul */}
-            <div className="text-center sm:text-left">
-              <div className="inline-flex items-center gap-2 bg-emerald-700/60 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 mb-3">
-                <TreeDeciduous size={16} /> Konservasi Lahan Padukuhan
+    <div className="flex min-h-screen flex-col bg-[#f4f7f4] text-slate-800">
+      <main className="flex-1">
+        {/* Header / Hero */}
+        <header className="relative isolate overflow-hidden bg-slate-950 text-white">
+          {/* Background gradient */}
+          <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.30),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.18),_transparent_40%)]" />
+
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-950/80 via-slate-950/90 to-slate-950" />
+
+          {/* Glow */}
+          <div className="absolute -left-20 top-10 -z-10 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute -right-20 bottom-0 -z-10 h-96 w-96 rounded-full bg-green-400/10 blur-3xl" />
+
+          {/* Grid pattern */}
+          <div className="absolute inset-0 -z-10 opacity-[0.04] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:42px_42px]" />
+
+          <div className="mx-auto max-w-7xl px-4 pb-24 pt-5 sm:px-8 sm:pb-32 lg:px-10">
+            {/* Navbar */}
+            <nav className="flex items-center justify-between border-b border-white/10 pb-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/10 shadow-lg shadow-emerald-950/30 backdrop-blur-xl">
+                  <TreeDeciduous
+                    className="text-emerald-300"
+                    size={23}
+                  />
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold tracking-wide text-white">
+                    Kebun Bibit Digital
+                  </p>
+
+                  <p className="text-[11px] text-slate-400">
+                    Kalitengah Kidul
+                  </p>
+                </div>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-                Kebun Bibit Kalitengah Kidul
-              </h1>
-              <p className="text-emerald-100 text-sm sm:text-base mt-2 max-w-2xl">
-                Sistem Inventarisasi & Pemetaan Digital Bibit Konservasi Kerjasama Padukuhan Kalitengah Kidul & Tim KKN.
-              </p>
-            </div>
 
-            {/* Logo KKN (Diambil dari public/logo-kkn.png) */}
-            <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/20 shrink-0">
-              <img
-                src="/logo-kkn.png"
-                alt="Logo KKN"
-                className="h-20 w-auto object-contain"
-              />
-            </div>
+              {/* Logo KKN bulat */}
+              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-emerald-300/35 bg-white/95 p-1.5 shadow-[0_12px_35px_rgba(0,0,0,0.35)] ring-1 ring-emerald-300/35 sm:h-24 sm:w-24">
+                <img
+                  src="/logo-kkn.png"
+                  alt="Logo Tim KKN"
+                  className="h-full w-full rounded-full object-contain"
+                />
+              </div>
+            </nav>
 
+            {/* Hero content */}
+            <div className="grid items-center gap-12 pt-14 lg:grid-cols-[1.25fr_0.75fr] lg:pt-20">
+              <div className="max-w-3xl">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold tracking-wide text-emerald-200 backdrop-blur-xl">
+                  <Leaf size={15} />
+                  Konservasi dan Digitalisasi Lingkungan
+                </div>
+
+                <h1 className="max-w-3xl text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
+                  Kebun Bibit
+
+                  <span className="block bg-gradient-to-r from-emerald-300 via-green-300 to-lime-300 bg-clip-text text-transparent">
+                    Kalitengah Kidul
+                  </span>
+                </h1>
+
+                <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
+                  Sistem inventarisasi dan pemetaan digital untuk memantau
+                  persebaran bibit konservasi secara akurat, transparan, dan
+                  mudah diakses oleh masyarakat.
+                </p>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <a
+                    href="#peta-bibit"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-400"
+                  >
+                    <MapPin size={17} />
+                    Lihat Peta Bibit
+                  </a>
+
+                  <a
+                    href="#inventaris-bibit"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.07] px-5 py-3 text-sm font-semibold text-slate-200 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white/10"
+                  >
+                    <Database size={17} />
+                    Buka Inventaris
+                  </a>
+                </div>
+              </div>
+
+              {/* Informasi program */}
+              <div className="hidden lg:block">
+                <div className="relative rounded-[2rem] border border-white/10 bg-white/[0.07] p-7 shadow-2xl shadow-black/30 backdrop-blur-xl">
+                  <div className="absolute -right-3 -top-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400 text-emerald-950 shadow-xl">
+                    <Sprout size={24} />
+                  </div>
+
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                    Program Lingkungan
+                  </p>
+
+                  <h2 className="mt-3 text-2xl font-bold text-white">
+                    Satu data untuk setiap pohon
+                  </h2>
+
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    Setiap bibit tercatat dalam sistem dan ditampilkan pada
+                    peta sesuai dengan titik lokasi penanamannya.
+                  </p>
+
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4">
+                      <ShieldCheck
+                        className="text-emerald-300"
+                        size={20}
+                      />
+
+                      <span className="text-sm font-medium text-slate-200">
+                        Data tersimpan secara digital
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4">
+                      <MapPin
+                        className="text-emerald-300"
+                        size={20}
+                      />
+
+                      <span className="text-sm font-medium text-slate-200">
+                        Lokasi bibit dapat dipetakan
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-slate-500 sm:block">
+            <ChevronDown size={22} />
           </div>
         </header>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 mt-8 space-y-8">
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-              <div className="bg-emerald-100 text-emerald-700 p-3 rounded-xl">
-                <Database size={24} />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total Bibit Terdaftar</p>
-                <h3 className="text-2xl font-bold text-slate-800">{trees.length} Pohon</h3>
-              </div>
-            </div>
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-              <div className="bg-blue-100 text-blue-700 p-3 rounded-xl">
-                <MapPin size={24} />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Lokasi Lahan</p>
-                <h3 className="text-lg font-bold text-slate-800">Padukuhan Kalitengah Kidul</h3>
-              </div>
-            </div>
-          </div>
+        {/* Main content */}
+        <div className="relative z-10 mx-auto -mt-14 max-w-7xl space-y-8 px-4 pb-16 sm:-mt-20 sm:px-8 lg:px-10">
+          {/* Stat cards */}
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Total bibit */}
+            <div className="group relative overflow-hidden rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_-25px_rgba(5,150,105,0.35)]">
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-emerald-50 transition duration-300 group-hover:scale-110" />
 
-          {/* Peta Interaktif */}
-          <section className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <MapPin className="text-emerald-600" size={20} />
-              Peta Persebaran Titik Tanam
-            </h2>
-            <MapWrapper trees={trees} />
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                    Total Bibit
+                  </p>
+
+                  <div className="mt-3 flex items-end gap-2">
+                    <h3 className="text-4xl font-black tracking-tight text-slate-900">
+                      {trees.length}
+                    </h3>
+
+                    <span className="mb-1 text-sm font-bold text-emerald-600">
+                      Pohon
+                    </span>
+                  </div>
+
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Seluruh bibit yang tercatat dalam sistem inventaris.
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 shadow-inner">
+                  <TreeDeciduous size={25} />
+                </div>
+              </div>
+            </div>
+
+            {/* Lokasi */}
+            <div className="group relative overflow-hidden rounded-3xl border border-blue-100 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_-25px_rgba(37,99,235,0.25)]">
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-blue-50 transition duration-300 group-hover:scale-110" />
+
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                    Lokasi Lahan
+                  </p>
+
+                  <h3 className="mt-3 max-w-[220px] text-xl font-black leading-snug text-slate-900">
+                    Padukuhan Kalitengah Kidul
+                  </h3>
+
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Wilayah pelaksanaan program konservasi dan penanaman.
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 shadow-inner">
+                  <MapPin size={25} />
+                </div>
+              </div>
+            </div>
+
+            {/* Status database */}
+            <div className="group relative overflow-hidden rounded-3xl border border-violet-100 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_-25px_rgba(124,58,237,0.25)] sm:col-span-2 lg:col-span-1">
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-violet-50 transition duration-300 group-hover:scale-110" />
+
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                    Status Data
+                  </p>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="relative flex h-3 w-3">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
+                    </span>
+
+                    <h3 className="text-xl font-black text-slate-900">
+                      Terhubung
+                    </h3>
+                  </div>
+
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Data diambil langsung dari database inventaris Supabase.
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 shadow-inner">
+                  <Database size={25} />
+                </div>
+              </div>
+            </div>
           </section>
 
-          {/* Tabel List Pohon */}
-          <section className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h2 className="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
-              <Database className="text-emerald-600" size={20} />
-              Daftar Inventaris Bibit ({trees.length} Pohon)
-            </h2>
-            <p className="text-xs text-slate-500 mb-4">
-              *Klik pada baris pohon untuk melihat foto dan detail lengkapnya.
-            </p>
-            <TreeTable trees={trees} />
+          {/* Peta */}
+          <section
+            id="peta-bibit"
+            className="scroll-mt-8 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-[0_20px_60px_-35px_rgba(15,23,42,0.35)]"
+          >
+            <div className="border-b border-slate-100 bg-gradient-to-r from-white to-emerald-50/50 px-5 py-5 sm:px-7">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                    <MapPin size={22} />
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-600">
+                      Pemetaan Digital
+                    </p>
+
+                    <h2 className="mt-1 text-lg font-black text-slate-900 sm:text-xl">
+                      Peta Persebaran Titik Tanam
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  {trees.length} titik terdaftar
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 sm:p-5">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                <MapWrapper trees={trees} />
+              </div>
+            </div>
+          </section>
+
+          {/* Tabel inventaris */}
+          <section
+            id="inventaris-bibit"
+            className="scroll-mt-8 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-[0_20px_60px_-35px_rgba(15,23,42,0.35)]"
+          >
+            <div className="border-b border-slate-100 bg-gradient-to-r from-white to-blue-50/50 px-5 py-5 sm:px-7">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-200">
+                    <Database size={21} />
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                      Database Bibit
+                    </p>
+
+                    <h2 className="mt-1 text-lg font-black text-slate-900 sm:text-xl">
+                      Daftar Inventaris Pohon
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="w-fit rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
+                  {trees.length} data tersedia
+                </div>
+              </div>
+
+              <p className="mt-4 max-w-2xl text-xs leading-5 text-slate-500">
+                Pilih atau klik salah satu baris untuk melihat informasi,
+                dokumentasi foto, dan detail lengkap bibit.
+              </p>
+            </div>
+
+            <div className="p-3 sm:p-5">
+              <TreeTable trees={trees} />
+            </div>
           </section>
         </div>
       </main>
 
-      {/* Footer Copyright */}
-      <footer className="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs border-t border-slate-800 mt-12">
-        <div className="max-w-6xl mx-auto space-y-1">
-          <p>© {new Date().getFullYear()} Kebun Bibit Padukuhan Kalitengah Kidul.</p>
-          <p className="text-slate-300 font-medium">
-            Developed with by <span className="text-emerald-400 font-bold">Wayan Sagita</span>
-          </p>
+      {/* Footer */}
+      <footer className="relative overflow-hidden border-t border-white/10 bg-slate-950 text-slate-400">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.16),_transparent_35%)]" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-8 lg:px-10">
+          <div className="grid gap-8 border-b border-white/10 pb-8 md:grid-cols-[1.5fr_1fr] md:items-end">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/10">
+                  <TreeDeciduous
+                    className="text-emerald-300"
+                    size={22}
+                  />
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-white">
+                    Kebun Bibit Kalitengah Kidul
+                  </h3>
+
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Inventarisasi dan pemetaan bibit konservasi
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-5 max-w-xl text-xs leading-6 text-slate-400">
+                Platform digital hasil kolaborasi Padukuhan Kalitengah Kidul
+                dan Tim KKN.
+              </p>
+            </div>
+
+            <div className="md:text-right">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-400">
+                Program Konservasi
+              </p>
+
+              <p className="mt-2 text-sm font-semibold text-slate-300">
+                Menanam hari ini, menjaga masa depan.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              © {currentYear} Kebun Bibit Padukuhan Kalitengah Kidul.
+            </p>
+
+            <p className="flex items-center gap-1.5 text-slate-400">
+              Developed with
+              by
+              <span className="font-bold text-emerald-400">
+                Wayan Sagita
+              </span>
+            </p>
+          </div>
         </div>
       </footer>
     </div>
