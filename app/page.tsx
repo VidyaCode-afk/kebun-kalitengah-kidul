@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import { Tree } from '@/lib/types'
 import MapWrapper from '../components/MapWrapper'
 import TreeTable from '../components/TreeTable'
+import InfoBibitCard from '../components/InfoBibitCard'
+import Link from 'next/link'
 import {
   TreeDeciduous,
   MapPin,
@@ -11,6 +13,7 @@ import {
   ShieldCheck,
   Heart,
   ChevronDown,
+  Lock,
 } from 'lucide-react'
 
 // Server Side Fetch data dari Supabase
@@ -41,7 +44,6 @@ export default async function HomePage() {
         <header className="relative isolate overflow-hidden bg-slate-950 text-white">
           {/* Background gradient */}
           <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.30),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.18),_transparent_40%)]" />
-
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-950/80 via-slate-950/90 to-slate-950" />
 
           {/* Glow */}
@@ -56,30 +58,37 @@ export default async function HomePage() {
             <nav className="flex items-center justify-between border-b border-white/10 pb-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/10 shadow-lg shadow-emerald-950/30 backdrop-blur-xl">
-                  <TreeDeciduous
-                    className="text-emerald-300"
-                    size={23}
-                  />
+                  <TreeDeciduous className="text-emerald-300" size={23} />
                 </div>
 
                 <div>
                   <p className="text-sm font-bold tracking-wide text-white">
                     Kebun Bibit Digital
                   </p>
-
                   <p className="text-[11px] text-slate-400">
                     Kalitengah Kidul
                   </p>
                 </div>
               </div>
 
-              {/* Logo KKN bulat */}
-              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-emerald-300/35 bg-white/95 p-1.5 shadow-[0_12px_35px_rgba(0,0,0,0.35)] ring-1 ring-emerald-300/35 sm:h-24 sm:w-24">
-                <img
-                  src="/logo-kkn.png"
-                  alt="Logo Tim KKN"
-                  className="h-full w-full rounded-full object-contain"
-                />
+              <div className="flex items-center gap-3">
+                {/* Tombol Login Admin di Navbar */}
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:bg-emerald-500 hover:text-white"
+                >
+                  <Lock size={14} />
+                  <span>Admin</span>
+                </Link>
+
+                {/* Logo KKN bulat */}
+                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-[2px] border-emerald-300/35 bg-white/95 p-1 shadow-md sm:h-16 sm:w-16">
+                  <img
+                    src="/logo-kkn.png"
+                    alt="Logo Tim KKN"
+                    className="h-full w-full rounded-full object-contain"
+                  />
+                </div>
               </div>
             </nav>
 
@@ -92,8 +101,7 @@ export default async function HomePage() {
                 </div>
 
                 <h1 className="max-w-3xl text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
-                  Kebun Bibit
-
+                  Kebun Bibit{' '}
                   <span className="block bg-gradient-to-r from-emerald-300 via-green-300 to-lime-300 bg-clip-text text-transparent">
                     Kalitengah Kidul
                   </span>
@@ -101,8 +109,7 @@ export default async function HomePage() {
 
                 <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
                   Sistem inventarisasi dan pemetaan digital untuk memantau
-                  persebaran bibit konservasi secara akurat, transparan, dan
-                  mudah diakses oleh masyarakat.
+                  persebaran bibit.
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -121,6 +128,14 @@ export default async function HomePage() {
                     <Database size={17} />
                     Buka Inventaris
                   </a>
+
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-300 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-500 hover:text-white"
+                  >
+                    <Lock size={17} />
+                    Dashboard Admin
+                  </Link>
                 </div>
               </div>
 
@@ -146,22 +161,14 @@ export default async function HomePage() {
 
                   <div className="mt-6 space-y-3">
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4">
-                      <ShieldCheck
-                        className="text-emerald-300"
-                        size={20}
-                      />
-
+                      <ShieldCheck className="text-emerald-300" size={20} />
                       <span className="text-sm font-medium text-slate-200">
                         Data tersimpan secara digital
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4">
-                      <MapPin
-                        className="text-emerald-300"
-                        size={20}
-                      />
-
+                      <MapPin className="text-emerald-300" size={20} />
                       <span className="text-sm font-medium text-slate-200">
                         Lokasi bibit dapat dipetakan
                       </span>
@@ -179,8 +186,8 @@ export default async function HomePage() {
 
         {/* Main content */}
         <div className="relative z-10 mx-auto -mt-14 max-w-7xl space-y-8 px-4 pb-16 sm:-mt-20 sm:px-8 lg:px-10">
-          {/* Stat cards */}
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Stat cards & Admin Access Card */}
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Total bibit */}
             <div className="group relative overflow-hidden rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_-25px_rgba(5,150,105,0.35)]">
               <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-emerald-50 transition duration-300 group-hover:scale-110" />
@@ -237,37 +244,36 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Status database */}
-            <div className="group relative overflow-hidden rounded-3xl border border-violet-100 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_-25px_rgba(124,58,237,0.25)] sm:col-span-2 lg:col-span-1">
-              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-violet-50 transition duration-300 group-hover:scale-110" />
+            {/* Kartu Informasi Bibit (Popup Screenshot) */}
+            <InfoBibitCard />
+
+            {/* CARD LOGIN ADMIN */}
+            <Link
+              href="/admin"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-[0_20px_55px_-25px_rgba(16,185,129,0.25)]"
+            >
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-slate-100 transition duration-300 group-hover:scale-110 group-hover:bg-emerald-50" />
 
               <div className="relative flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
-                    Status Data
+                    Pengelola Kebun
                   </p>
 
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="relative flex h-3 w-3">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
-                    </span>
-
-                    <h3 className="text-xl font-black text-slate-900">
-                      Terhubung
-                    </h3>
-                  </div>
+                  <h3 className="mt-3 text-xl font-black text-slate-900 transition group-hover:text-emerald-600">
+                    Login Admin
+                  </h3>
 
                   <p className="mt-3 text-xs leading-5 text-slate-500">
-                    Data diambil langsung dari database inventaris Supabase.
+                    Kelola data, edit titik lokasi, & upload foto bibit.
                   </p>
                 </div>
 
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 shadow-inner">
-                  <Database size={25} />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 shadow-inner transition group-hover:bg-emerald-100 group-hover:text-emerald-700">
+                  <Lock size={23} />
                 </div>
               </div>
-            </div>
+            </Link>
           </section>
 
           {/* Peta */}
@@ -397,8 +403,9 @@ export default async function HomePage() {
             </p>
 
             <p className="flex items-center gap-1.5 text-slate-400">
-              Developed with
-              by
+              Developed with{' '}
+             {' '}
+              by{' '}
               <span className="font-bold text-emerald-400">
                 Wayan Sagita
               </span>
