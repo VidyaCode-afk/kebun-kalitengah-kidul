@@ -2,7 +2,6 @@ import { supabase } from '@/lib/supabase'
 import { Tree } from '@/lib/types'
 import MapWrapper from '../components/MapWrapper'
 import TreeTable from '../components/TreeTable'
-import InfoBibitPopup from '../components/InfoBibitPopup'
 import {
   TreeDeciduous,
   MapPin,
