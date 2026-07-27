@@ -11,11 +11,12 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [pin, setPin] = useState('')
   const [isAuth, setIsAuth] = useState(false)
-  
-  // State modal edit
-  const [editingTree, setEditingTree] = useState<Tree | null>(null)
 
-  // Ambil data bibit
+  // State modal edit & upload foto
+  const [editingTree, setEditingTree] = useState<Tree | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  // Ambil data bibit dari Supabase
   const fetchTrees = async () => {
     setLoading(true)
     const { data } = await supabase.from('trees').select('*').order('id', { ascending: true })
@@ -27,17 +28,51 @@ export default function AdminPage() {
     if (isAuth) fetchTrees()
   }, [isAuth])
 
-  // Simple PIN Protection (Password default: 1234 atau ganti sesukamu)
+  // System Login PIN
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     if (pin === 'kalitengahkidul1234') {
       setIsAuth(true)
     } else {
-      alert('PIN Admin Salah! (Default: 1234)')
+      alert('PIN Admin Salah!')
     }
   }
 
-  // Handle Save Edit
+  // Fungsi Upload Gambar dari HP/Laptop ke Supabase Storage
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true)
+      if (!e.target.files || e.target.files.length === 0) return
+      if (!editingTree) return
+
+      const file = e.target.files[0]
+      const fileExt = file.name.split('.').pop()
+      const filePath = `${editingTree.tree_code}-${Date.now()}.${fileExt}`
+
+      // Upload file ke bucket 'tree-photos'
+      const { error: uploadError } = await supabase.storage
+        .from('tree-photos')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      // Ambil Public URL foto yang baru di-upload
+      const { data } = supabase.storage
+        .from('tree-photos')
+        .getPublicUrl(filePath)
+
+      // Set URL foto baru ke state form edit
+      setEditingTree({ ...editingTree, photo_url: data.publicUrl })
+      alert('Foto berhasil diunggah!')
+    } catch (error) {
+      alert('Gagal mengunggah foto! Pastikan Bucket "tree-photos" sudah dibuat Public.')
+      console.error(error)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  // Handle Simpan Perubahan Data Ke Supabase Database
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingTree) return
@@ -64,7 +99,7 @@ export default function AdminPage() {
     }
   }
 
-  // Tampilan Form Login Admin Simpel
+  // Tampilan Form Login Admin
   if (!isAuth) {
     return (
       <main className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
@@ -77,7 +112,7 @@ export default function AdminPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="password"
-              placeholder="Masukkan PIN (Default: ....)"
+              placeholder="Masukkan PIN Admin"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               className="w-full px-4 py-2 text-center text-lg font-bold border border-slate-300 rounded-xl focus:outline-emerald-600"
@@ -225,14 +260,42 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-slate-600">URL Foto Pohon</label>
-                  <input
-                    type="text"
-                    value={editingTree.photo_url}
-                    onChange={(e) => setEditingTree({ ...editingTree, photo_url: e.target.value })}
-                    className="w-full mt-1 p-2 border rounded-lg text-sm"
-                  />
+                {/* Section Preview & Upload Foto */}
+                <div className="border p-3 rounded-xl bg-slate-50 space-y-2">
+                  <label className="text-xs font-semibold text-slate-700 block">Foto Pohon Saat Ini</label>
+                  {editingTree.photo_url && (
+                    <img
+                      src={editingTree.photo_url}
+                      alt="Preview"
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                  )}
+                  
+                  <div>
+                    <label className="block text-[11px] text-slate-500 mb-1">
+                      Upload Foto Baru (Direct Kamera HP / File):
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleFileUpload}
+                      disabled={uploading}
+                      className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
+                    />
+                    {uploading && <p className="text-xs text-emerald-600 mt-1 animate-pulse">Mengunggah foto ke Cloud...</p>}
+                  </div>
+
+                  <div className="pt-1">
+                    <label className="block text-[11px] text-slate-500 mb-1">Atau Masukkan Direct URL Foto:</label>
+                    <input
+                      type="text"
+                      value={editingTree.photo_url}
+                      onChange={(e) => setEditingTree({ ...editingTree, photo_url: e.target.value })}
+                      className="w-full p-2 border rounded-lg text-xs"
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
 
                 <div>

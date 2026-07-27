@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { Tree } from '@/lib/types'
-import MapWrapper from '@/components/MapWrapper'
+import MapWrapper from '../components/MapWrapper'
+import TreeTable from '../components/TreeTable'
 import { TreeDeciduous, MapPin, Database } from 'lucide-react'
 
 // Server Side Fetch data dari Supabase
@@ -71,39 +72,18 @@ export default async function HomePage() {
           <MapWrapper trees={trees} />
         </section>
 
-        {/* Tabel List Pohon */}
+        {/* Tabel List Pohon (Interaktif Pop-up) */}
         <section className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <Database className="text-emerald-600" size={20} />
-            Daftar Inventaris Bibit (40 Pohon)
+            Daftar Inventaris Bibit ({trees.length} Pohon)
           </h2>
+          <p className="text-xs text-slate-500 mb-4">
+            *Klik pada baris pohon untuk melihat foto dan detail lengkapnya.
+          </p>
           
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-100 text-slate-700 border-b border-slate-200">
-                  <th className="p-3 font-semibold">Kode</th>
-                  <th className="p-3 font-semibold">Nama Tanaman</th>
-                  <th className="p-3 font-semibold">Nama Latin</th>
-                  <th className="p-3 font-semibold">Tanggal Tanam</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {trees.map((tree) => (
-                  <tr key={tree.id} className="hover:bg-slate-50/80 transition">
-                    <td className="p-3">
-                      <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-xs">
-                        {tree.tree_code}
-                      </span>
-                    </td>
-                    <td className="p-3 font-medium text-slate-800">{tree.species_name}</td>
-                    <td className="p-3 italic text-slate-500">{tree.latin_name}</td>
-                    <td className="p-3 text-slate-600">{tree.planted_at}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Komponen Tabel Pop-Up */}
+          <TreeTable trees={trees} />
         </section>
       </div>
     </main>
