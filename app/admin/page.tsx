@@ -31,6 +31,7 @@ import {
   TreeDeciduous,
   UploadCloud,
   X,
+  Home,
 } from 'lucide-react'
 
 type NotificationState = {
@@ -220,7 +221,7 @@ export default function AdminPage() {
     }
   }
 
-  // Simpan perubahan ke database
+  // Simpan perubahan ke database (Termasuk Status)
   const handleSave = async (
     event: FormEvent<HTMLFormElement>,
   ) => {
@@ -259,6 +260,7 @@ export default function AdminPage() {
           longitude: Number(editingTree.longitude),
           photo_url: editingTree.photo_url?.trim() || '',
           description: editingTree.description?.trim() || '',
+          status: editingTree.status || 'Sudah Ditanam', // <--- SIMPAN STATUS PENANAMAN
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingTree.id)
@@ -295,6 +297,7 @@ export default function AdminPage() {
         tree.species_name,
         tree.latin_name,
         tree.description,
+        tree.status,
       ].some((value) =>
         String(value || '')
           .toLowerCase()
@@ -696,7 +699,7 @@ export default function AdminPage() {
                     </h2>
 
                     <p className="mt-1 text-xs text-slate-500">
-                      Edit informasi dan dokumentasi setiap bibit.
+                      Edit informasi, status penanaman, dan dokumentasi setiap bibit.
                     </p>
                   </div>
                 </div>
@@ -714,7 +717,7 @@ export default function AdminPage() {
                     onChange={(event) =>
                       setSearchQuery(event.target.value)
                     }
-                    placeholder="Cari kode atau nama tanaman..."
+                    placeholder="Cari kode, nama, atau status..."
                     className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                   />
                 </div>
@@ -777,7 +780,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="overflow-x-auto rounded-2xl border border-slate-200">
-                    <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+                    <table className="w-full min-w-[950px] border-collapse text-left text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 bg-slate-50">
                           <th className="px-4 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">
@@ -786,6 +789,10 @@ export default function AdminPage() {
 
                           <th className="px-4 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                             Tanaman
+                          </th>
+
+                          <th className="px-4 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Status
                           </th>
 
                           <th className="px-4 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">
@@ -807,93 +814,115 @@ export default function AdminPage() {
                       </thead>
 
                       <tbody className="divide-y divide-slate-100">
-                        {filteredTrees.map((tree) => (
-                          <tr
-                            key={tree.id}
-                            className="group transition hover:bg-emerald-50/40"
-                          >
-                            <td className="px-4 py-4">
-                              <span className="inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800">
-                                {tree.tree_code}
-                              </span>
-                            </td>
+                        {filteredTrees.map((tree) => {
+                          const isPlanted = tree.status !== 'Belum Ditanam'
 
-                            <td className="px-4 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                                  <Leaf size={17} />
+                          return (
+                            <tr
+                              key={tree.id}
+                              className="group transition hover:bg-emerald-50/40"
+                            >
+                              <td className="px-4 py-4">
+                                <span className="inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800">
+                                  {tree.tree_code}
+                                </span>
+                              </td>
+
+                              <td className="px-4 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                                    <Leaf size={17} />
+                                  </div>
+
+                                  <div>
+                                    <p className="font-bold text-slate-800">
+                                      {tree.species_name || '-'}
+                                    </p>
+
+                                    <p className="mt-0.5 text-xs italic text-slate-400">
+                                      {tree.latin_name || 'Nama latin belum tersedia'}
+                                    </p>
+                                  </div>
                                 </div>
+                              </td>
 
-                                <div>
-                                  <p className="font-bold text-slate-800">
-                                    {tree.species_name || '-'}
-                                  </p>
+                              {/* KOLOM BADGE STATUS */}
+                              <td className="px-4 py-4">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold ${
+                                    isPlanted
+                                      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                      : 'border-amber-200 bg-amber-50 text-amber-800'
+                                  }`}
+                                >
+                                  {isPlanted ? (
+                                    <Sprout size={13} />
+                                  ) : (
+                                    <Home size={13} />
+                                  )}
+                                  {tree.status || 'Sudah Ditanam'}
+                                </span>
+                              </td>
 
-                                  <p className="mt-0.5 text-xs italic text-slate-400">
-                                    {tree.latin_name || 'Nama latin belum tersedia'}
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
-
-                            <td className="px-4 py-4">
-                              <div className="flex items-start gap-2 text-xs text-slate-500">
-                                <MapPin
-                                  size={14}
-                                  className="mt-0.5 shrink-0 text-blue-500"
-                                />
-
-                                <div>
-                                  <p>
-                                    Lat:{' '}
-                                    {formatCoordinate(tree.latitude)}
-                                  </p>
-
-                                  <p className="mt-1">
-                                    Long:{' '}
-                                    {formatCoordinate(tree.longitude)}
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
-
-                            <td className="px-4 py-4">
-                              {tree.photo_url ? (
-                                <div className="h-12 w-16 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                                  <img
-                                    src={tree.photo_url}
-                                    alt={`Foto ${tree.species_name}`}
-                                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                              <td className="px-4 py-4">
+                                <div className="flex items-start gap-2 text-xs text-slate-500">
+                                  <MapPin
+                                    size={14}
+                                    className="mt-0.5 shrink-0 text-blue-500"
                                   />
-                                </div>
-                              ) : (
-                                <div className="flex h-12 w-16 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-                                  <ImageIcon size={18} />
-                                </div>
-                              )}
-                            </td>
 
-                            <td className="max-w-xs px-4 py-4">
-                              <p className="line-clamp-2 text-xs leading-5 text-slate-600">
-                                {tree.description ||
-                                  'Belum ada deskripsi.'}
-                              </p>
-                            </td>
+                                  <div>
+                                    <p>
+                                      Lat:{' '}
+                                      {formatCoordinate(tree.latitude)}
+                                    </p>
 
-                            <td className="px-4 py-4 text-center">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setEditingTree({ ...tree })
-                                }
-                                className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-100"
-                              >
-                                <Edit3 size={14} />
-                                Edit Data
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                                    <p className="mt-1">
+                                      Long:{' '}
+                                      {formatCoordinate(tree.longitude)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td className="px-4 py-4">
+                                {tree.photo_url ? (
+                                  <div className="h-12 w-16 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                    <img
+                                      src={tree.photo_url}
+                                      alt={`Foto ${tree.species_name}`}
+                                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="flex h-12 w-16 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                                    <ImageIcon size={18} />
+                                  </div>
+                                )}
+                              </td>
+
+                              <td className="max-w-xs px-4 py-4">
+                                <p className="line-clamp-2 text-xs leading-5 text-slate-600">
+                                  {tree.description ||
+                                    'Belum ada deskripsi.'}
+                                </p>
+                              </td>
+
+                              <td className="px-4 py-4 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setEditingTree({ ...tree })
+                                  }
+                                  className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-100"
+                                >
+                                  <Edit3 size={14} />
+                                  Edit Data
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -997,7 +1026,39 @@ export default function AdminPage() {
               className="overflow-y-auto bg-slate-50"
             >
               <div className="space-y-5 p-5 sm:p-7">
-                {/* Nama tanaman */}
+                
+                {/* STATUS PENANAMAN (DROPDOWN) */}
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+                  <label
+                    htmlFor="status-penanaman"
+                    className="mb-1.5 block text-xs font-bold text-amber-900"
+                  >
+                    Status Penanaman Bibit
+                  </label>
+                  <select
+                    id="status-penanaman"
+                    value={editingTree.status || 'Sudah Ditanam'}
+                    onChange={(event) =>
+                      setEditingTree({
+                        ...editingTree,
+                        status: event.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-amber-300 bg-white px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+                  >
+                    <option value="Sudah Ditanam">
+                      🌱 Sudah Ditanam (Di Lahan Kalitengah Kidul)
+                    </option>
+                    <option value="Belum Ditanam">
+                      🏡 Belum Ditanam (Persemaian Pak Dukuh)
+                    </option>
+                  </select>
+                  <p className="mt-2 text-[11px] text-amber-700">
+                    *Ubah ke &quot;Belum Ditanam&quot; jika bibit masih dirawat di rumah Pak Dukuh sebelum musim hujan.
+                  </p>
+                </div>
+
+                {/* Nama tanaman & Nama Latin */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label
